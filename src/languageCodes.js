@@ -1,0 +1,16 @@
+export const languageCodes = [
+  { name: "Arabic", code: "ar-EG" },
+  { name: "Hindi", code: "hi-IN" },
+  { name: "Portuguese", code: "pt-PT" },
+  { name: "English", code: "en-US" },
+  { name: "French", code: "fr-FR" },
+  { name: "Russian", code: "ru-RU" },
+  { name: "Japanese", code: "ja-JP" },
+  { name: "Chinese", code: "zh-CN" },
+  { name: "Spanish", code: "es-ES" },
+  { name: "German", code: "de-DE" },
+  { name: "Korean", code: "ko-KR" },
+  { name: "Turkish", code: "tr-TR" },
+  { name: "Vietnamese", code: "vi-VN" },
+  { name: "Italian", code: "it-IT" },
+];
