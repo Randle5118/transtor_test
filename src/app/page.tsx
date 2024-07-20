@@ -193,7 +193,7 @@ export default function Home() {
 
         <div className="mid-box my-9 py-6">
           <div className="flex justify-between mb-4">
-            <h1 style={{ fontSize: "30px" }}>Translator</h1>
+            <h1 style={{ fontSize: "30px", fontFamily: "Vector" }}>Translator</h1>
             <a
               href="https://reurl.cc/qVlK43"
               target="_blank"
@@ -209,7 +209,11 @@ export default function Home() {
               onSelectLanguage={handleSelectFromLanguage}
             />
             <span className="text-gray-500" style={{ fontSize: "25px" }}>
-              ⇄
+              <img
+                src="exchange.png"
+                alt="exchange symbol"
+                style={{ width: "25px", height: "25px", marginTop: "5px" }}
+              />
             </span>
             <LanguageToModal
               languages={languages}
