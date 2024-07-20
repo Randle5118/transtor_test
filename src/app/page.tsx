@@ -16,7 +16,7 @@ import SpeechRecognition, {
 
 import { languageCodes } from "../languageCodes";
 
-import  main from "../utils/translate";
+import main from "../utils/translate";
 
 export default function Home() {
   const languages = [
@@ -68,7 +68,8 @@ export default function Home() {
   const loading2Ref = useRef<HTMLDivElement>(null);
   const from_text = useRef<HTMLDivElement>(null);
   const to_text = useRef<HTMLDivElement>(null);
-  const topButton = useRef<HTMLButtonElement>(null);
+  const countTime_to = useRef<HTMLButtonElement>(null);
+  const countTime_From = useRef<HTMLButtonElement>(null);
 
   const handleClickTo = () => {
     console.log("test");
@@ -76,16 +77,33 @@ export default function Home() {
     const loading2 = loading2Ref.current;
     const textBox2 = textBox2Ref.current;
     const textBox1 = textBox1Ref.current;
+    const countTime = countTime_to.current;
 
-    startListening_To(progress2, textBox2, loading2, textBox1);
+    startListening_To(progress2, textBox2, loading2, textBox1, countTime);
   };
 
-  const startListening_To = (progress: any, textbox: any, loading: any, res_textbox: any) => {
+  const startListening_To = (
+    progress: any,
+    textbox: any,
+    loading: any,
+    res_textbox: any,
+    countTime: any,
+  ) => {
     progress.style.display = "block";
     loading.style.display = "block";
     textbox.firstChild.innerHTML = "";
     res_textbox.classList.remove("content-center");
     res_textbox.classList.remove("text-center");
+    res_textbox.firstChild.innerHTML = ""
+
+    var count = 19;
+    setInterval(() => {
+      countTime.innerHTML = count--;
+      if( count == 0 ) {
+        clearInterval;
+      }
+    }, 1000)
+
     resetTranscript();
     SpeechRecognition.startListening({
       continuous: true,
@@ -98,7 +116,10 @@ export default function Home() {
       record_from(progress, textbox, loading);
       setTimeout(async () => {
         textbox.firstChild.innerHTML = from_text.current?.innerHTML;
-        const res = await main(from_text.current?.innerHTML, targetFromLanguage);
+        const res = await main(
+          from_text.current?.innerHTML,
+          targetFromLanguage
+        );
         res_textbox.firstChild.innerHTML = res;
       }, 1000);
     }, 20000);
@@ -108,18 +129,27 @@ export default function Home() {
     const progress1 = progress1Ref.current;
     const textBox1 = textBox1Ref.current;
     const loading1 = loading1Ref.current;
-    const top_button = topButton.current;
     const textBox2 = textBox2Ref.current;
+    const counTime = countTime_From.current;
 
-    startListening_From(progress1, textBox1, loading1, textBox2);
+    startListening_From(progress1, textBox1, loading1, textBox2, counTime);
   };
 
   const startListening_From = (
     progress: any,
     textbox: any,
     loading: any,
-    res_textbox: any
+    res_textbox: any,
+    countTime : any
   ) => {
+    var count = 19;
+    setInterval(() => {
+      countTime.innerHTML = count--;
+      if( count == 0 ) {
+        clearInterval;
+      }
+    }, 1000)
+
     progress.style.display = "block";
     loading.style.display = "block";
     textbox.classList.remove("content-center");
@@ -132,6 +162,7 @@ export default function Home() {
       language: selectedFromLanguage,
     });
 
+
     setTimeout(() => {
       // top_button.disabled = false;
       SpeechRecognition.stopListening();
@@ -143,9 +174,6 @@ export default function Home() {
       }, 1000);
     }, 20000);
   };
-  
-  
-
 
   return (
     <div>
@@ -171,8 +199,6 @@ export default function Home() {
           <div className="flex justify-between items-center mt-2">
             <button
               className="btn-speak relative text-white overflow-hidden px-4 py-2 rounded-lg my-3 disabled:bg-slate-400"
-              ref={topButton}
-              // disabled={true}
               onClick={handleClickTo}
             >
               <div
@@ -182,7 +208,7 @@ export default function Home() {
               >
                 <div className="progress-bar"></div>
                 <p className="progress-percent-text">
-                  Finish record (<span>20</span>)
+                  Finish record (<span ref={countTime_to}>20</span>)
                 </p>
               </div>
               <i className="fa fa-microphone mr-2"></i>
@@ -193,7 +219,9 @@ export default function Home() {
 
         <div className="mid-box my-9 py-6">
           <div className="flex justify-between mb-4">
-            <h1 style={{ fontSize: "30px", fontFamily: "Vector" }}>Translator</h1>
+            <h1 style={{ fontSize: "30px", fontFamily: "Vector" }}>
+              Translator
+            </h1>
             <a
               href="https://reurl.cc/qVlK43"
               target="_blank"
@@ -211,7 +239,7 @@ export default function Home() {
             <span className="text-gray-500" style={{ fontSize: "25px" }}>
               <img
                 src="exchange.png"
-                alt="exchange symbol"
+                alt=""
                 style={{ width: "25px", height: "25px", marginTop: "5px" }}
               />
             </span>
@@ -219,9 +247,6 @@ export default function Home() {
               languages={languages}
               onSelectLanguage={handleSelectToLanguage}
             />
-            {/* <button className="border bg-gray-300 px-12 py-2 rounded-lg">
-              Japanese
-            </button> */}
           </div>
         </div>
 
@@ -258,7 +283,7 @@ export default function Home() {
               >
                 <div className="progress-bar"></div>
                 <p className="progress-percent-text">
-                  Finish record (<span>20</span>)
+                  Finish record (<span ref={countTime_From}>20</span>)
                 </p>
               </div>
               <i className="fa fa-microphone mr-2"></i>
