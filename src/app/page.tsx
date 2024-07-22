@@ -72,7 +72,6 @@ export default function Home() {
   const countTime_From = useRef<HTMLButtonElement>(null);
 
   const handleClickTo = () => {
-    console.log("test");
     const progress2 = progress2Ref.current;
     const loading2 = loading2Ref.current;
     const textBox2 = textBox2Ref.current;
@@ -87,42 +86,80 @@ export default function Home() {
     textbox: any,
     loading: any,
     res_textbox: any,
-    countTime: any,
+    countTime: any
   ) => {
-    progress.style.display = "block";
-    loading.style.display = "block";
-    textbox.firstChild.innerHTML = "";
-    res_textbox.classList.remove("content-center");
-    res_textbox.classList.remove("text-center");
-    res_textbox.firstChild.innerHTML = ""
+    var count: number = 19;
 
-    var count = 19;
-    setInterval(() => {
+    const countDown = setInterval(() => {
       countTime.innerHTML = count--;
-      if( count == 0 ) {
-        clearInterval;
+      if (count < 0) {
+        clearInterval(countDown);
+        progress.style.display = "none";
+        loading.style.display = "none";
+        res_textbox.classList.remove("content-center");
+        res_textbox.classList.remove("text-center");
+
+        SpeechRecognition.stopListening();
+        record_from(progress, textbox, loading);
+        setTimeout(async () => {
+          textbox.firstChild.innerHTML = from_text.current?.innerHTML;
+          const res = await main(
+            from_text.current?.innerHTML,
+            targetToLanguage
+          );
+          res_textbox.firstChild.innerHTML = res;
+        }, 500);
+        countTime.innerHTML = 20;
+        count = 19;
       }
-    }, 1000)
+    }, 1000);
 
-    resetTranscript();
-    SpeechRecognition.startListening({
-      continuous: true,
-      language: selectedToLanguage,
-    });
+    if (progress.style.display == "block") {
+      clearInterval(countDown);
+      progress.style.display = "none";
+      loading.style.display = "none";
 
-    setTimeout(() => {
-      // top_button.disabled = false;
       SpeechRecognition.stopListening();
       record_from(progress, textbox, loading);
       setTimeout(async () => {
         textbox.firstChild.innerHTML = from_text.current?.innerHTML;
-        const res = await main(
-          from_text.current?.innerHTML,
-          targetFromLanguage
-        );
+        const res = await main(from_text.current?.innerHTML, targetToLanguage);
+        res_textbox.classList.remove("content-center");
+        res_textbox.classList.remove("text-center");
         res_textbox.firstChild.innerHTML = res;
-      }, 1000);
-    }, 20000);
+      }, 500);
+      countTime.innerHTML = 20;
+      count = 19;
+    } else {
+      if (count < 0) {
+        clearInterval(countDown);
+
+        SpeechRecognition.stopListening();
+        record_from(progress, textbox, loading);
+        setTimeout(async () => {
+          textbox.firstChild.innerHTML = from_text.current?.innerHTML;
+          const res = await main(
+            from_text.current?.innerHTML,
+            targetToLanguage
+          );
+          res_textbox.classList.remove("content-center");
+          res_textbox.classList.remove("text-center");
+          res_textbox.firstChild.innerHTML = res;
+        }, 500);
+        countTime.innerHTML = 20;
+        count = 19;
+      } else {
+        progress.style.display = "block";
+        loading.style.display = "block";
+        textbox.firstChild.innerHTML = "";
+
+        resetTranscript();
+        SpeechRecognition.startListening({
+          continuous: true,
+          language: selectedFromLanguage,
+        });
+      }
+    }
   };
 
   const handleClickFrom = () => {
@@ -140,39 +177,76 @@ export default function Home() {
     textbox: any,
     loading: any,
     res_textbox: any,
-    countTime : any
+    countTime: any
   ) => {
-    var count = 19;
-    setInterval(() => {
+    var count: number = 19;
+
+    const countDown = setInterval(() => {
       countTime.innerHTML = count--;
-      if( count == 0 ) {
-        clearInterval;
+      if (count < 0) {
+        clearInterval(countDown);
+        progress.style.display = "none";
+        loading.style.display = "none";
+
+        SpeechRecognition.stopListening();
+        record_from(progress, textbox, loading);
+        setTimeout(async () => {
+          textbox.firstChild.innerHTML = from_text.current?.innerHTML;
+          const res = await main(
+            from_text.current?.innerHTML,
+            targetToLanguage
+          );
+          res_textbox.firstChild.innerHTML = res;
+        }, 500);
+        countTime.innerHTML = 20;
+        count = 19;
       }
-    }, 1000)
+    }, 1000);
 
-    progress.style.display = "block";
-    loading.style.display = "block";
-    textbox.classList.remove("content-center");
-    textbox.classList.remove("text-center");
-    textbox.firstChild.innerHTML = "";
+    if (progress.style.display == "block") {
+      clearInterval(countDown);
+      progress.style.display = "none";
+      loading.style.display = "none";
 
-    resetTranscript();
-    SpeechRecognition.startListening({
-      continuous: true,
-      language: selectedFromLanguage,
-    });
-
-
-    setTimeout(() => {
-      // top_button.disabled = false;
       SpeechRecognition.stopListening();
       record_from(progress, textbox, loading);
       setTimeout(async () => {
         textbox.firstChild.innerHTML = from_text.current?.innerHTML;
         const res = await main(from_text.current?.innerHTML, targetToLanguage);
         res_textbox.firstChild.innerHTML = res;
-      }, 1000);
-    }, 20000);
+      }, 500);
+      countTime.innerHTML = 20;
+      count = 19;
+    } else {
+      if (count < 0) {
+        clearInterval(countDown);
+
+        SpeechRecognition.stopListening();
+        record_from(progress, textbox, loading);
+        setTimeout(async () => {
+          textbox.firstChild.innerHTML = from_text.current?.innerHTML;
+          const res = await main(
+            from_text.current?.innerHTML,
+            targetToLanguage
+          );
+          res_textbox.firstChild.innerHTML = res;
+        }, 500);
+        countTime.innerHTML = 20;
+        count = 19;
+      } else {
+        progress.style.display = "block";
+        loading.style.display = "block";
+        textbox.classList.remove("content-center");
+        textbox.classList.remove("text-center");
+        textbox.firstChild.innerHTML = "";
+
+        resetTranscript();
+        SpeechRecognition.startListening({
+          continuous: true,
+          language: selectedFromLanguage,
+        });
+      }
+    }
   };
 
   return (
