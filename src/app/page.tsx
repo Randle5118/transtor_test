@@ -12,8 +12,6 @@ import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
 
-// import { Translate } from "translate";
-
 import { languageCodes } from "../languageCodes";
 
 import main from "../utils/translate";
@@ -71,6 +69,8 @@ export default function Home() {
   const countTime_to = useRef<HTMLButtonElement>(null);
   const countTime_From = useRef<HTMLButtonElement>(null);
 
+  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
+
   const handleClickTo = () => {
     const progress2 = progress2Ref.current;
     const loading2 = loading2Ref.current;
@@ -78,44 +78,33 @@ export default function Home() {
     const textBox1 = textBox1Ref.current;
     const countTime = countTime_to.current;
 
-    startListening_To(progress2, textBox2, loading2, textBox1, countTime);
+    startListening(progress2, textBox2, loading2, textBox1, countTime, targetFromLanguage);
   };
 
-  const startListening_To = (
+  const handleClickFrom = () => {
+    const progress1 = progress1Ref.current;
+    const textBox1 = textBox1Ref.current;
+    const loading1 = loading1Ref.current;
+    const textBox2 = textBox2Ref.current;
+    const counTime = countTime_From.current;
+
+    startListening(progress1, textBox1, loading1, textBox2, counTime, targetToLanguage);
+  };
+
+  const startListening = (
     progress: any,
     textbox: any,
     loading: any,
     res_textbox: any,
-    countTime: any
+    countTime: any,
+    targetLanguage: string
   ) => {
     var count: number = 19;
 
-    const countDown = setInterval(() => {
-      countTime.innerHTML = count--;
-      if (count < 0) {
-        clearInterval(countDown);
-        progress.style.display = "none";
-        loading.style.display = "none";
-        res_textbox.classList.remove("content-center");
-        res_textbox.classList.remove("text-center");
-
-        SpeechRecognition.stopListening();
-        record_from(progress, textbox, loading);
-        setTimeout(async () => {
-          textbox.firstChild.innerHTML = from_text.current?.innerHTML;
-          const res = await main(
-            from_text.current?.innerHTML,
-            targetToLanguage
-          );
-          res_textbox.firstChild.innerHTML = res;
-        }, 500);
-        countTime.innerHTML = 20;
-        count = 19;
-      }
-    }, 1000);
-
     if (progress.style.display == "block") {
-      clearInterval(countDown);
+      if (intervalId != null) {
+        clearInterval(intervalId);
+      }
       progress.style.display = "none";
       loading.style.display = "none";
 
@@ -123,7 +112,7 @@ export default function Home() {
       record_from(progress, textbox, loading);
       setTimeout(async () => {
         textbox.firstChild.innerHTML = from_text.current?.innerHTML;
-        const res = await main(from_text.current?.innerHTML, targetToLanguage);
+        const res = await main(from_text.current?.innerHTML, targetLanguage);
         res_textbox.classList.remove("content-center");
         res_textbox.classList.remove("text-center");
         res_textbox.firstChild.innerHTML = res;
@@ -131,8 +120,36 @@ export default function Home() {
       countTime.innerHTML = 20;
       count = 19;
     } else {
+      const countDown = setInterval(() => {
+        countTime.innerHTML = count--;
+        if (count < 0) {
+          clearInterval(countDown);
+          progress.style.display = "none";
+          loading.style.display = "none";
+
+          SpeechRecognition.stopListening();
+          record_from(progress, textbox, loading);
+          setTimeout(async () => {
+            textbox.firstChild.innerHTML = from_text.current?.innerHTML;
+            const res = await main(
+              from_text.current?.innerHTML,
+              targetToLanguage
+            );
+            res_textbox.classList.remove("content-center");
+            res_textbox.classList.remove("text-center");
+            res_textbox.firstChild.innerHTML = res;
+          }, 500);
+          countTime.innerHTML = 20;
+          count = 19;
+        }
+      }, 1000);
+
+      setIntervalId(countDown);
+
       if (count < 0) {
         clearInterval(countDown);
+        progress.style.display = "none";
+        loading.style.display = "none";
 
         SpeechRecognition.stopListening();
         record_from(progress, textbox, loading);
@@ -144,91 +161,6 @@ export default function Home() {
           );
           res_textbox.classList.remove("content-center");
           res_textbox.classList.remove("text-center");
-          res_textbox.firstChild.innerHTML = res;
-        }, 500);
-        countTime.innerHTML = 20;
-        count = 19;
-      } else {
-        progress.style.display = "block";
-        loading.style.display = "block";
-        textbox.firstChild.innerHTML = "";
-
-        resetTranscript();
-        SpeechRecognition.startListening({
-          continuous: true,
-          language: selectedFromLanguage,
-        });
-      }
-    }
-  };
-
-  const handleClickFrom = () => {
-    const progress1 = progress1Ref.current;
-    const textBox1 = textBox1Ref.current;
-    const loading1 = loading1Ref.current;
-    const textBox2 = textBox2Ref.current;
-    const counTime = countTime_From.current;
-
-    startListening_From(progress1, textBox1, loading1, textBox2, counTime);
-  };
-
-  const startListening_From = (
-    progress: any,
-    textbox: any,
-    loading: any,
-    res_textbox: any,
-    countTime: any
-  ) => {
-    var count: number = 19;
-
-    const countDown = setInterval(() => {
-      countTime.innerHTML = count--;
-      if (count < 0) {
-        clearInterval(countDown);
-        progress.style.display = "none";
-        loading.style.display = "none";
-
-        SpeechRecognition.stopListening();
-        record_from(progress, textbox, loading);
-        setTimeout(async () => {
-          textbox.firstChild.innerHTML = from_text.current?.innerHTML;
-          const res = await main(
-            from_text.current?.innerHTML,
-            targetToLanguage
-          );
-          res_textbox.firstChild.innerHTML = res;
-        }, 500);
-        countTime.innerHTML = 20;
-        count = 19;
-      }
-    }, 1000);
-
-    if (progress.style.display == "block") {
-      clearInterval(countDown);
-      progress.style.display = "none";
-      loading.style.display = "none";
-
-      SpeechRecognition.stopListening();
-      record_from(progress, textbox, loading);
-      setTimeout(async () => {
-        textbox.firstChild.innerHTML = from_text.current?.innerHTML;
-        const res = await main(from_text.current?.innerHTML, targetToLanguage);
-        res_textbox.firstChild.innerHTML = res;
-      }, 500);
-      countTime.innerHTML = 20;
-      count = 19;
-    } else {
-      if (count < 0) {
-        clearInterval(countDown);
-
-        SpeechRecognition.stopListening();
-        record_from(progress, textbox, loading);
-        setTimeout(async () => {
-          textbox.firstChild.innerHTML = from_text.current?.innerHTML;
-          const res = await main(
-            from_text.current?.innerHTML,
-            targetToLanguage
-          );
           res_textbox.firstChild.innerHTML = res;
         }, 500);
         countTime.innerHTML = 20;
